@@ -78,9 +78,9 @@ class Product(models.Model):
         max_width, max_height = Product.MAX_RESOLUTION
         if image.size > Product.MAX_IMAGE_SIZE:
             raise ValidationError('Размер изображения не должен превышать 3МБ!')
-        if img.height < min_height or img.widht < min_width:
+        if img.height < min_height or img.width < min_width:
             raise MinResolutionErrorException('Разрешение изображения меньше минимального!')
-        if img.height > max_height or img.widht > max_width:
+        if img.height > max_height or img.width > max_width:
             raise MaxResolutionErrorException('Разрешение изображения больше максимального!')
         super().save(*args, **kwargs)
 
