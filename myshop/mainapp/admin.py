@@ -1,17 +1,16 @@
-from PIL import Image
-from django.core.exceptions import ValidationError
+
 from django.forms import ModelChoiceField, ModelForm
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from .models import *
-
 
 class NotebookAdminForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['image'].help_text = mark_safe(
-            f"<span style='color:blue; font-size:14px;'>Загружайте изображение с минимальным разрешением {Product.MIN_RESOLUTION}")
+            f"<span style='color:blue; font-size:14px;'>"
+            f"Загружайте изображение с минимальным разрешением {Product.MIN_RESOLUTION}")
 
     def clean_image(self):
         image = self.cleaned_data['image']
