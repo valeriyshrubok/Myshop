@@ -8,17 +8,14 @@ class BaseView(View):
 
     def get(self, request, *args, **kwargs):
         categories = Category.objects.get_categories_for_left_sidebar()
-        return render(request, 'base.html', {'categories': categories})
+        products = LatestProducts.objects.get_products_for_mainpage('notebook', 'smartphone')
+        context = {
+            'categories': categories,
+            'products': products
+        }
+        return render(request, 'base.html', context)
 
 
-
-# def test_view(request):
-#     categories = Category.objects.get_categories_for_left_sidebar()
-#     products = LatestProducts.objects.get_products_for_mainpage('notebook', 'smartphone')
-#     context = {
-#         'products': products
-#     }
-#     return render(request, 'base.html', {'categories': categories})
 
 
 class ProductDetailView(DetailView):
