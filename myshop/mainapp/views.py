@@ -34,3 +34,12 @@ class CartView(View):
     def get(self, request, *args, **kwargs):
         customer = Customer.objects.get(user=request.user)
         cart = Cart.objects.get(owner=customer)
+
+
+class CategoryDetailView(DetailView):
+
+    model = Category
+    queryset = Category.objects.all()
+    context_object_name = 'category'
+    template_name = 'category_detail.html'
+    slug_url_kwarg = 'slug'
