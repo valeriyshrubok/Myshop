@@ -1,13 +1,14 @@
 from django.shortcuts import render
-from django.views.generic import DetailView
-from .models import Notebook, Smartphone, LatestProducts
+from django.views.generic import DetailView, View
+from .models import Notebook, Smartphone, Category, LatestProducts, Customer, Cart
 
 def test_view(request):
+    categories = Category.objects.get_categories_for_left_sidebar()
     products = LatestProducts.objects.get_products_for_mainpage('notebook', 'smartphone')
     context = {
         'products': products
     }
-    return render(request, 'base.html', context)
+    return render(request, 'base.html', {'categories': categories})
 
 
 class ProductDetailView(DetailView):
@@ -26,3 +27,10 @@ class ProductDetailView(DetailView):
     context_object_name = 'product'
     template_name = 'product_detail.html'
     slug_url_kwarg = 'slug'
+
+
+class CartView(View):
+
+    def get(self, request, *args, **kwargs):
+        customer = Customer.objects.get(user=request.user)
+        cart = Cart.objects.get(owner=customer)
