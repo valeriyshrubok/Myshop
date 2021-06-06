@@ -164,6 +164,12 @@ class CartProduct(models.Model):
     quantity = models.PositiveIntegerField(default=1)
     final_price = models.DecimalField(max_digits=6, decimal_places=2, verbose_name='Общая цена')
 
+    def save(self, *args, **kwargs):
+        self.final_price = self.quantity * self.content_object.price
+        super().save(*args, **kwargs)
+
+
+
     def __str__(self):
         return f"Продукт {self.content_object.title} "
 
