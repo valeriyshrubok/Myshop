@@ -45,6 +45,7 @@ class ProductDetailView(CartMixin, CategoryDetailMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['ct_model'] = self.model._meta.model_name
+        context['cart'] = self.cart
         return context
 
 
@@ -56,6 +57,10 @@ class CategoryDetailView(CartMixin, CategoryDetailMixin, DetailView):
     template_name = 'category_detail.html'
     slug_url_kwarg = 'slug'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cart'] = self.cart
+        return context
 
 class AddToCartView(CartMixin, View):
 
