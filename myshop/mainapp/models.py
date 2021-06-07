@@ -116,6 +116,10 @@ class Product(models.Model):
         super().save(*args, **kwargs)
 
 
+    def get_model_name(self):
+        return self.__class__.__name__.lower()
+
+
     def __str__(self):
         return self.title
 
@@ -136,6 +140,7 @@ class Notebook(Product):
         return get_product_url(self, 'product_detail')
 
 
+
 class Smartphone(Product):
     diagonal = models.CharField(max_length=200, verbose_name='Диагональ')
     display_type = models.CharField(max_length=200, verbose_name='Тип дисплея')
@@ -150,7 +155,6 @@ class Smartphone(Product):
 
     def get_absolute_url(self):
         return get_product_url(self, 'product_detail')
-
 
 
 
