@@ -1,9 +1,11 @@
 from django.shortcuts import render
 from django.contrib.contenttypes.models import ContentType
+from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.views.generic import DetailView, View
 from .models import Notebook, Smartphone, Category, LatestProducts, Customer, Cart, CartProduct
 from .mixins import CategoryDetailMixin, CartMixin
+
 
 
 class BaseView(CartMixin, View):
@@ -67,11 +69,12 @@ class AddToCartView(CartMixin, View):
         if created:
             self.cart.products.add(cart_product)
         self.cart.save()
+        messages.add_message(request, messages.INFO, "Товар успешно добавлен")
         return HttpResponseRedirect('/cart/')
 
 class DeleteFromCartView(CartMixin, View):
 
-    def get(self, *args, **kwargs):
+    def get(self,request, *args, **kwargs):
         ct_model, product_slug = kwargs.get('ct_model'), kwargs.get('slug')
         content_type = ContentType.objects.get(model=ct_model)
         product = content_type.model_class().objects.get(slug=product_slug)
@@ -81,7 +84,26 @@ class DeleteFromCartView(CartMixin, View):
         self.cart.products.remove(cart_product)
         cart_product.delete()
         self.cart.save()
+        messages.add_message(request, messages.INFO, "Товар успешно удален")
         return HttpResponseRedirect('/cart/')
+
+
+class ChangeQuantityView(CartMixin, View):
+
+    def post(self, request, *args, **kwargs):
+        ct_model, product_slug = kwargs.get('ct_model'), kwargs.get('slug')
+        content_type = ContentType.objects.get(model=ct_model)
+        product = content_type.model_class().objects.get(slug=product_slug)
+        cart_product = CartProduct.objects.get(
+            user=self.cart.owner, cart=self.cart, content_type=content_type, object_id=product.id
+        )
+        quantity = int(request.POST.get('quantity'))
+        cart_product.quantity = quantity
+        cart_product.save()
+        self.cart.save()
+        messages.add_message(request, messages.INFO, "Количество успешно изменено")
+        return HttpResponseRedirect('/cart/')
+
 
 class CartView(CartMixin, View):
 
