@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.shortcuts import render
 from django.contrib.contenttypes.models import ContentType
 from django.contrib import messages
@@ -138,6 +139,7 @@ class CheckoutView(CartMixin, View):
 
 class MakeOrderView(CartMixin, View):
 
+    @transaction.atomic
     def post(self, request, *args, **kwargs):
         form = OrderForm(request.POST or None)
         customer = Customer.objects.get(user=request.user)
@@ -153,6 +155,7 @@ class MakeOrderView(CartMixin, View):
             new_order.comment = form.cleaned_data['comment']
             new_order.save()
             self.cart.in_order = True
+            self.cart.save()
             new_order.cart = self.cart
             new_order.save()
             customer.orders.add(new_order)
