@@ -133,3 +133,28 @@ class CheckoutView(CartMixin, View):
             'form': form
         }
         return render(request, 'checkout.html', context)
+
+
+class MakeOrderView(CartMixin, View):
+
+    def post(self, request, *args, **kwargs):
+        form = OrderForm(request.POST or None)
+        customer = Customer.objects.get(user=request.user)
+        if form.is_valid():
+            new_order = form.save(commit=False)
+            new_order.customer = customer
+            new_order.first_name = form.cleaned_data['first_name']
+            new_order.last_name = form.cleaned_data['last_name']
+            new_order.phone = form.cleaned_data['phone']
+            new_order.adress = form.cleaned_data['adress']
+            new_order.buying_type = form.cleaned_data['buying_type']
+            new_order.order_data = form.cleaned_data['order_data']
+            new_order.comment = form.cleaned_data['comment']
+            new_order.save()
+            self.cart.in_order = True
+            new_order.cart = self.cart
+            new_order.save()
+            customer.orders.add(new_order)
+            messages.add_message(request, messages.INFO, 'Заказ оформлен! Наш Менеджер с вами свяжется')
+            return HttpResponseRedirect('/')
+        return HttpResponseRedirect('/checkout/')

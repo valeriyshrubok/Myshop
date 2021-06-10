@@ -233,6 +233,7 @@ class Order(models.Model):
     )
 
     customer = models.ForeignKey(Customer, verbose_name='Покупатель', related_name='related_orders', on_delete=models.CASCADE)
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, verbose_name='Корзина', null=True, blank=True)
     first_name = models.CharField(max_length=200, verbose_name='Имя')
     last_name = models.CharField(max_length=200, verbose_name='Фамилия')
     phone = models.CharField(max_length=200, verbose_name='Телефон')
