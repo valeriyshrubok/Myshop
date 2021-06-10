@@ -6,6 +6,7 @@ from django.views.generic import DetailView, View
 from .models import Notebook, Smartphone, Category, LatestProducts, Customer, Cart, CartProduct
 from .mixins import CategoryDetailMixin, CartMixin
 from .forms import OrderForm
+from .utils import recalculation_cart
 
 
 
@@ -74,7 +75,7 @@ class AddToCartView(CartMixin, View):
         )
         if created:
             self.cart.products.add(cart_product)
-        self.cart.save()
+        recalculation_cart(self.cart)
         messages.add_message(request, messages.INFO, "Товар успешно добавлен")
         return HttpResponseRedirect('/cart/')
 
@@ -89,7 +90,7 @@ class DeleteFromCartView(CartMixin, View):
         )
         self.cart.products.remove(cart_product)
         cart_product.delete()
-        self.cart.save()
+        recalculation_cart(self.cart)
         messages.add_message(request, messages.INFO, "Товар успешно удален")
         return HttpResponseRedirect('/cart/')
 
@@ -106,7 +107,7 @@ class ChangeQuantityView(CartMixin, View):
         quantity = int(request.POST.get('quantity'))
         cart_product.quantity = quantity
         cart_product.save()
-        self.cart.save()
+        recalculation_cart(self.cart)
         messages.add_message(request, messages.INFO, "Количество успешно изменено")
         return HttpResponseRedirect('/cart/')
 
