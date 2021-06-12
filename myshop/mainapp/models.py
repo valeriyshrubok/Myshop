@@ -180,7 +180,7 @@ class CartProduct(models.Model):
 
 
     def __str__(self):
-        return f"Продукт {self.content_object.title} "
+        return f"Продукт {self.product.title} "
 
 class Cart(models.Model):
     owner = models.ForeignKey('Customer', null=True, verbose_name='Владелец', on_delete=models.CASCADE)
