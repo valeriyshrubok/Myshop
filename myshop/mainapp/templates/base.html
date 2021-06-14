@@ -38,9 +38,7 @@
             <ul class="navbar-nav">
               <li class="nav-item dropdown">
                 <a class="nav-link text-light dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown"
-                   aria-haspopup="true" aria-expanded="false">
-                    Категории
-                </a>
+                   aria-haspopup="true" aria-expanded="false">Категории</a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                   {% for category in categories %}
                   <a class="dropdown-item" href="{{ category.get_absolute_url }}">{{ category.name }}</a>
@@ -66,7 +64,9 @@
                     <a class="nav-link" href="{% url 'cart' %}">Корзина <span class="badge badge-pill badge-danger">{{ cart.products.count }}</span></a>
                 </li>
                 <li class="=nav-item">
+                    {% if request.user.is_authenticated %}
                     | <a href="{% url 'logout' %}">Выйти</a>
+                    {% endif %}
                 </li>
             </ul>
         </div>
@@ -78,7 +78,7 @@
 
     <div class="row">
 
-        <div class="col-lg-3 mt-5">
+        <div class="col-lg-4 mt-5">
             <div class="list-group">
 
             </div>
