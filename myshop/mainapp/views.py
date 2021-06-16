@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.views.generic import DetailView, View
-from .models import Notebook, Smartphone, Category, LatestProducts, Customer, Cart, CartProduct
+from .models import Notebook, Smartphone, Category, LatestProducts, Customer, Order, CartProduct
 from .mixins import CategoryDetailMixin, CartMixin
 from .forms import OrderForm, LoginForm, RegistrationForm
 from .utils import recalculation_cart
@@ -237,3 +237,18 @@ class RegistrationView(CartMixin, View):
             'cart': self.cart
         }
         return render(request, 'registration.html', context)
+
+class ProfileView(CartMixin,View):
+
+    def get(self, request, *args, **kwargs):
+
+        customer = Customer.objects.get(user=request.user)
+        orders = Order.objects.filter(customer=customer).order_by('-created_at')
+        categories = Category.objects.get_categories_for_left_sidebar()
+        context = {
+            'customer': customer,
+            'orders': orders,
+            'categories': categories,
+            'cart': self.cart
+        }
+        return render(request, 'profile.html', context)
