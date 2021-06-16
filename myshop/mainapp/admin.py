@@ -4,6 +4,23 @@ from django.contrib import admin
 from django.utils.safestring import mark_safe
 from .models import *
 
+class SmartphoneAdminForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['image'].help_text = mark_safe(
+           '<div style = "color:red; font-size:14px">При загрузке изображения с разрешением больше {}x{} оно будет обрезано!</div>'.format(*Product.MAX_RESOLUTION)
+        )
+        instance = kwargs.get('instance')
+        if instance and not instance.sd:
+            self.fields['sd_volume_max'].widget.attrs.update({
+                'readonly': True,
+                'style': 'background:lightgray'
+            })
+    def clean(self):
+        if not self.cleaned_data['sd']:
+            self.cleaned_data['sd_volume_max'] = None
+        return self.cleaned_data
+
 class NotebookAdminForm(ModelForm):
 
     def __init__(self, *args, **kwargs):

@@ -49,7 +49,7 @@ class RegistrationForm(forms.ModelForm):
     confirm_password = forms.CharField(widget=forms.PasswordInput)
     password = forms.CharField(widget=forms.PasswordInput)
     phone = forms.CharField(required=False)
-    address = forms.CharField(required=False)
+    adress = forms.CharField(required=False)
     email = forms.EmailField(required=True)
 
     def __init__(self, *args, **kwargs):
