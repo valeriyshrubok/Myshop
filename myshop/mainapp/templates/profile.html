@@ -26,7 +26,7 @@
                     <td>
                         <ul>
                             {% for item in order.cart.products.all %}
-                                <li>{{ item.content_object.title }} x {{ item.qty }}</li>
+                                <li>{{ item.content_object.title }} x {{ item.quantity }}</li>
                             {% endfor %}
                         </ul>
                     </td>

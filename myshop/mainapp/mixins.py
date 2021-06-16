@@ -1,12 +1,13 @@
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic import View
-from .models import Category, Cart,  Customer, Notebook, Smartphone
+from .models import Category, Cart,  Customer, Notebook, Smartphone, Accessories
 
 class CategoryDetailMixin(SingleObjectMixin):
 
     CATEGORY_SLUG_FOR_PRODUCT_MODEL = {
         'notebooks': Notebook,
-        'smartphones': Smartphone
+        'smartphones': Smartphone,
+        'accessories': Accessories,
     }
 
     def get_context_data(self, **kwargs):
@@ -16,8 +17,9 @@ class CategoryDetailMixin(SingleObjectMixin):
             context['categories'] = Category.objects.get_categories_for_left_sidebar()
             context['category_products'] = model.objects.all()
             return context
-        context = super().get_context_data(**kwargs)
-        context['categories'] = Category.objects.get_categories_for_left_sidebar()
+        else:
+            context = super().get_context_data(**kwargs)
+            context['categories'] = Category.objects.get_categories_for_left_sidebar()
         return context
 
 

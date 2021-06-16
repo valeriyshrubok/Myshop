@@ -36,6 +36,8 @@ PRODUCT_SPEC = {
         'sd': 'sd',
         'Задняя камера': 'main_cam_mp',
         'Передняя камера': 'frontal_cam_mp'
+    },
+    'accessories': {
     }
 }
 

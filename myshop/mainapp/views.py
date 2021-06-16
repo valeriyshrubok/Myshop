@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.views.generic import DetailView, View
-from .models import Notebook, Smartphone, Category, LatestProducts, Customer, Order, CartProduct
+from .models import Notebook, Smartphone, Category, LatestProducts, Customer, Order, CartProduct, Accessories
 from .mixins import CategoryDetailMixin, CartMixin
 from .forms import OrderForm, LoginForm, RegistrationForm
 from .utils import recalculation_cart
@@ -16,8 +16,8 @@ class BaseView(CartMixin, View):
 
     def get(self, request, *args, **kwargs):
         categories = Category.objects.get_categories_for_left_sidebar()
-        products = LatestProducts.objects.get_products_for_mainpage(
-            'notebook', 'smartphone', with_respect_to='notebook'
+        products = LatestProducts.object.get_products_for_mainpage(
+            'notebook', 'smartphone', 'accessories', with_respect_to='notebook'
         )
         context = {
             'categories': categories,
@@ -33,7 +33,8 @@ class ProductDetailView(CartMixin, CategoryDetailMixin, DetailView):
 
     CT_MODEL_MODEL_CLASS = {
         'notebook': Notebook,
-        'smartphone': Smartphone
+        'smartphone': Smartphone,
+        'accessories': Accessories
     }
 
     def dispatch(self, request, *args, **kwargs):

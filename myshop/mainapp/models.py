@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.utils import timezone
+from io import BytesIO
 
 
 User = get_user_model()
@@ -51,21 +52,22 @@ class LatestProductsManager:
 
 class LatestProducts:
 
-    objects = LatestProductsManager
+    object = LatestProductsManager
 
 
 class CategoryManager(models.Manager):
 
     CATEGORY_NAME_COUNT_NAME = {
         'Ноутбуки': 'notebook__count',
-        'Смартфоны': 'smartphone__count'
+        'Смартфоны': 'smartphone__count',
+        'Аксессуары': 'accessories__count'
     }
 
     def get_queryset(self):
         return super().get_queryset()
 
     def get_categories_for_left_sidebar(self):
-        models = get_models_count('notebook', 'smartphone')
+        models = get_models_count('notebook', 'smartphone','accessories')
         qs = list(self.get_queryset().annotate(*models))
         data = [
             dict(name=c.name, url=c.get_absolute_url(), count=getattr(c, self.CATEGORY_NAME_COUNT_NAME[c.name]))
@@ -104,16 +106,26 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=6, decimal_places=2, verbose_name='Цена')
 
     def save(self, *args, **kwargs):
+
         image = self.image
         img = Image.open(image)
-        min_width, min_height = Product.MIN_RESOLUTION
-        max_width, max_height = Product.MAX_RESOLUTION
-        if image.size > Product.MAX_IMAGE_SIZE:
-            raise ValidationError('Размер изображения не должен превышать 3МБ!')
-        if img.height < min_height or img.width < min_width:
-            raise MinResolutionErrorException('Разрешение изображения меньше минимального!')
-        if img.height > max_height or img.width > max_width:
-            raise MaxResolutionErrorException('Разрешение изображения больше максимального!')
+        new_img = img.convert('RGB')
+        if img.size[0] > img.size[1]:
+            w_percent = (self.MAX_RESOLUTION[0] / float(img.size[0]))
+            h_size = int((float(img.size[1]) * float(w_percent)))
+            resized_new_img = new_img.resize((self.MAX_RESOLUTION[0], h_size), Image.ANTIALIAS)
+        else:
+            w_percent = (self.MAX_RESOLUTION[1] / float(img.size[1]))
+            h_size = int((float(img.size[0]) * float(w_percent)))
+            resized_new_img = new_img.resize((h_size, self.MAX_RESOLUTION[1]), Image.ANTIALIAS)
+
+        filestream = BytesIO()
+        resized_new_img.save(filestream, 'JPEG', quality=90)
+        filestream.seek(0)
+        name = '{}.{}'.format(*self.image.name.split('.'))
+        self.image = InMemoryUploadedFile(
+            filestream, 'ImageField', name, 'jpeg/image', sys.getsizeof(filestream), None
+        )
         super().save(*args, **kwargs)
 
 
