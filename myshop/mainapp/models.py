@@ -1,3 +1,5 @@
+import sys
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.urls import reverse
 from PIL import Image
 from django.core.exceptions import ValidationError
